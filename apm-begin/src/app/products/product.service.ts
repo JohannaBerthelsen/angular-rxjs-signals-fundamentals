@@ -11,6 +11,7 @@ import {
   shareReplay,
   BehaviorSubject,
   filter,
+  combineLatest,
 } from 'rxjs';
 import { Product } from './product';
 import { HttpErrorService } from '../utilities/http-error.service';
@@ -39,7 +40,7 @@ export class ProductService {
     catchError((err) => this.handleError(err))
   );
 
-  readonly product$ = this.productSelected$.pipe(
+  readonly product1$ = this.productSelected$.pipe(
     filter(Boolean),
     switchMap((id) => {
       const productUrl = this.productsUrl + '/' + id;
@@ -48,6 +49,15 @@ export class ProductService {
         catchError((err) => this.handleError(err))
       );
     })
+  );
+
+  product$ = combineLatest([this.productSelected$, this.products$]).pipe(
+    map(([selectedProductId, products]) =>
+      products.find((product) => product.id === selectedProductId)
+    ),
+    filter(Boolean),
+    switchMap((product) => this.getProductWithReviews(product)),
+    catchError((err) => this.handleError(err))
   );
 
   productSelected(selectedProductId: number): void {
