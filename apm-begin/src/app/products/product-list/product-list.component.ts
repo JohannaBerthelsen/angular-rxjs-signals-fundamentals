@@ -1,10 +1,9 @@
 import { Component, inject } from '@angular/core';
 
 import { NgIf, NgFor, NgClass, AsyncPipe } from '@angular/common';
-import { Product } from '../product';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { ProductService } from '../product.service';
-import { catchError, EMPTY, tap } from 'rxjs';
+import { catchError, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'pm-product-list',
@@ -19,12 +18,7 @@ export class ProductListComponent {
   private productService = inject(ProductService);
 
   // Products
-  readonly products$ = this.productService.products$.pipe(
-    catchError((err) => {
-      this.errorMessage = err;
-      return EMPTY;
-    })
-  );
+  products = this.productService.products;
 
   // Selected product id to highlight the entry
   readonly selectedProductId$ = this.productService.productSelected$;
